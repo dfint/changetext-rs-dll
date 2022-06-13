@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, types::PyBytes, types::PyTuple};
+use pyo3::{prelude::*, types::PyBytes};
 use utf16string::{LE, WString};
 
 fn main() {
@@ -6,11 +6,10 @@ fn main() {
     
     let py_app = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/changetext.py"));
     
-    let from_python = Python::with_gil(|py| -> PyResult<Py<PyAny>> {
+    Python::with_gil(|py| -> PyResult<()> {
         let changetext: Py<PyAny> = PyModule::from_code(py, py_app, "", "")?
             .getattr("ChangeText")?
             .into();
-        
         
         let hello = WString::<LE>::from("hello");
         let b1 = hello.as_bytes();
@@ -19,10 +18,12 @@ fn main() {
             Ok(())
         })?;
         
-        let args = PyTuple::new(py, &[py_bytes]);
-        changetext.call1(py, args)
-    });
-    
-    println!("py: {:?}", from_python);
-    
+        let result = changetext.call1(py, (py_bytes,))?;
+        let result: Vec<u8> = result.extract(py)?;
+        
+        let result = WString::from_utf16le(result).expect("UTF-16 decode error");
+        let result = result.to_utf8();
+        println!("Result: {result}");
+        Ok(())
+    }).expect("Error");
 }
