@@ -11,12 +11,8 @@ fn main() -> PyResult<()> {
             .getattr("ChangeText")?
             .into();
         
-        let hello = WString::<LE>::from("hello");
-        let b1 = hello.as_bytes();
-        let py_bytes = PyBytes::new_with(py, b1.len(), |bytes: &mut [u8]| {
-            bytes.copy_from_slice(b1);
-            Ok(())
-        })?;
+        let text = WString::<LE>::from("hello");
+        let py_bytes = PyBytes::new(py, text.as_bytes());
         
         let result = changetext.call1(py, (py_bytes,))?;
         let result: Vec<u8> = result.extract(py)?;
