@@ -1,7 +1,7 @@
 use pyo3::{prelude::*, types::PyBytes};
 use utf16string::{LE, WString};
 
-fn main() {
+fn main() -> PyResult<()> {
     pyo3::prepare_freethreaded_python();
     
     let py_app = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/changetext.py"));
@@ -25,5 +25,5 @@ fn main() {
         let result = result.to_utf8();
         println!("Result: {result}");
         Ok(())
-    }).expect("Error");
+    })
 }
