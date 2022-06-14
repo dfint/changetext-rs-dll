@@ -22,10 +22,16 @@ mod tests {
     
     #[test]
     fn test_read_wstring() {
-        let text = WString::<LE>::from("Some text");
-        assert_eq!(read_wstring(text.as_ptr().cast()), text.as_bytes());
+        let text = WString::<LE>::from("Some text\0");
+        let mut result = read_wstring(text.as_ptr().cast());
+        result.push(0);
+        result.push(0);
+        assert_eq!(result, text.as_bytes());
         
-        let text = WString::<BE>::from("Some text");
-        assert_eq!(read_wstring(text.as_ptr().cast()), text.as_bytes());
+        let text = WString::<BE>::from("Some text\0");
+        let mut result = read_wstring(text.as_ptr().cast());
+        result.push(0);
+        result.push(0);
+        assert_eq!(result, text.as_bytes());
     }
 }
