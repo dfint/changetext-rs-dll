@@ -31,12 +31,12 @@ pub extern "C" fn Changetext(text: *const u16) -> *const u16 {
     
     let text = WString::<LE>::from_utf16le(read_wstring(text)).expect("Conversion error");
     
+    let mut result_text = String::new();
+    
     Python::with_gil(|py| -> PyResult<()> {
         let changetext: Py<PyAny> = PyModule::from_code(py, py_app, "", "")?
             .getattr("ChangeText")?
             .into();
-        
-        // let text = WString::<LE>::from("hello");
         
         let py_bytes = PyBytes::new(py, text.as_bytes());
         
@@ -44,10 +44,10 @@ pub extern "C" fn Changetext(text: *const u16) -> *const u16 {
         let result: Vec<u8> = result.extract(py)?;
         
         let result = WString::from_utf16le(result).expect("UTF-16 decode error");
-        let result = result.to_utf8();
+        result_text.clone_from(&result.to_utf8());
         
         Ok(())
     }).expect("Something went wrong");
     
-    return null();
+    return result_text.as_ptr().cast();
 }

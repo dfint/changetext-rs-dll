@@ -5,6 +5,7 @@ fn main() -> PyResult<()> {
     pyo3::prepare_freethreaded_python();
     
     let py_app = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/changetext.py"));
+    let mut result_text = String::new();
     
     Python::with_gil(|py| -> PyResult<()> {
         let changetext: Py<PyAny> = PyModule::from_code(py, py_app, "", "")?
@@ -19,7 +20,12 @@ fn main() -> PyResult<()> {
         
         let result = WString::from_utf16le(result).expect("UTF-16 decode error");
         let result = result.to_utf8();
-        println!("Result: {result}");
+        result_text.clone_from(&result);
+        
         Ok(())
-    })
+    })?;
+    
+    println!("Result: {result_text}");
+    
+    Ok(())
 }
