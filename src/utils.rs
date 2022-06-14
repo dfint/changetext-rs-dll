@@ -34,4 +34,12 @@ mod tests {
         result.push(0);
         assert_eq!(result, text.as_bytes());
     }
+    
+    #[test]
+    fn test_with_garbage() {
+        let text_with_garbage = WString::<LE>::from("Some text\0Some garbage");
+        let clean_text = WString::<LE>::from("Some text");
+        let result = read_wstring(text_with_garbage.as_ptr().cast());
+        assert_eq!(result, clean_text.as_bytes())
+    }
 }
