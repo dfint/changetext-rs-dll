@@ -21,7 +21,7 @@ mod tests {
     use super::*;
     
     #[test]
-    fn test_read_wstring() {
+    fn test_normal() {
         let mut text = WString::<LE>::from("Some text\0");
         let result = read_wstring(text.as_ptr().cast());
         text.pop();  // remove trailing zero character
@@ -39,5 +39,11 @@ mod tests {
         let clean_text = WString::<LE>::from("Some text");
         let result = read_wstring(text_with_garbage.as_ptr().cast());
         assert_eq!(result, clean_text.as_bytes())
+    }
+    
+    #[test]
+    fn test_empty() {
+        let bytes = b"\0\0";
+        assert!(read_wstring(bytes.as_ptr().cast()).is_empty());
     }
 }
