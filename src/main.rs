@@ -1,31 +1,10 @@
-use pyo3::{prelude::*, types::PyBytes};
-use utf16string::{LE, WString};
-
-fn main() -> PyResult<()> {
-    pyo3::prepare_freethreaded_python();
+fn main() {
+    let mut vector = Vec::<u8>::new();
+    let bytes = b"ab";
+    // vector.copy_from_slice(bytes);
+    // vector.copy_from_slice(bytes);
+    vector.push(bytes[0]);
+    vector.push(bytes[1]);
     
-    let py_app = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/changetext.py"));
-    let mut result_text = String::new();
-    
-    Python::with_gil(|py| -> PyResult<()> {
-        let changetext: Py<PyAny> = PyModule::from_code(py, py_app, "", "")?
-            .getattr("ChangeText")?
-            .into();
-        
-        let text = WString::<LE>::from("hello");
-        let py_bytes = PyBytes::new(py, text.as_bytes());
-        
-        let result = changetext.call1(py, (py_bytes,))?;
-        let result: Vec<u8> = result.extract(py)?;
-        
-        let result = WString::from_utf16le(result).expect("UTF-16 decode error");
-        let result = result.to_utf8();
-        result_text.clone_from(&result);
-        
-        Ok(())
-    })?;
-    
-    println!("Result: {result_text}");
-    
-    Ok(())
+    println!("{vector:?}");
 }

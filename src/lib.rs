@@ -1,5 +1,6 @@
 use pyo3::{prelude::*, types::PyBytes};
 use utf16string::{LE, WString};
+mod utils;
 
 #[no_mangle]
 pub extern "C" fn Init() -> u64 {
@@ -8,27 +9,11 @@ pub extern "C" fn Init() -> u64 {
     return 0;
 }
 
-fn read_wstring(text: *const u16) -> Vec<u8> {
-    let mut vector: Vec<u8> = Vec::new();
-    
-    unsafe {
-        let mut idx: isize = 0;
-        while *text.offset(idx) != 0 {
-            let bytes = (*text.offset(idx)).to_le_bytes();
-            vector.push(bytes[0]);
-            vector.push(bytes[1]);
-            idx += 1;
-        } 
-    }
-    
-    vector
-}
-
 #[no_mangle]
 pub extern "C" fn Changetext(text: *const u16) -> *const u16 {
     let py_app = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/changetext.py"));
     
-    let text = WString::<LE>::from_utf16le(read_wstring(text)).expect("Conversion error");
+    let text = WString::<LE>::from_utf16le(utils::read_wstring(text)).expect("Conversion error");
     
     let mut result_text = String::new();
     
