@@ -1,6 +1,5 @@
 use pyo3::{prelude::*, types::PyBytes};
 use utf16string::{LE, WString};
-use std::{ptr::null};
 
 #[no_mangle]
 pub extern "C" fn Init() -> u64 {
