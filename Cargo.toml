@@ -9,5 +9,5 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.18.3"
+pyo3 = "0.19.0"
 utf16string = "0.2.0"
